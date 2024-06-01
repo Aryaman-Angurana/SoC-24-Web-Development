@@ -9,7 +9,10 @@ btn.onclick = () => {
 }
 
 const btn2 = document.getElementById("save-btn");
+const entry = document.getElementById("entries");
 
 btn2.onclick = () => {
-    console.log(count);
+    entry.textContent += count + " - ";
+    count = 0;
+    document.getElementById("count-el").innerText = count;
 }
