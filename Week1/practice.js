@@ -1,143 +1,58 @@
-let firstCard;
-let secondCard;
+let myLeads = [];
 
-let sum;
+const inputEl = document.getElementById("input-el");
+const inputBtn = document.getElementById("input-btn");
+const ulEl = document.getElementById("ulel");
+let count = 0;
 
-const p1 = document.getElementById("message");
-const p2 = document.getElementById("cards");
-const p3 = document.getElementById("sum");
-const start = document.getElementById("start");
-const newcard = document.getElementById("newcard");
+let children = []
 
-
-function p2change()
-{
-    if (firstCard === 1){
-        p2.textContent = "Cards : A";
-    }
-    else if (firstCard === 11){
-        p2.textContent = "Cards : J";
-    }
-    else if (firstCard === 12){
-        p2.textContent = "Cards : Q";
-    }
-    else if (firstCard === 13){
-        p2.textContent = "Cards : K";
-    }
-    else{
-        p2.textContent = "Cards : " + firstCard;
-    }
-    if (secondCard === 1){
-        p2.textContent += " - " + "A";
-    }
-    else if (secondCard === 11){
-        p2.textContent += " - " + "J";
-    }
-    else if (secondCard === 12){
-        p2.textContent += " - " + "Q";
-    }
-    else if (secondCard === 13){
-        p2.textContent += " - " + "K";
-    }
-    else{
-        p2.textContent += " - " + secondCard;
-    }
+for (let index = 0; index < localStorage.length; index++) {
+    const ele = localStorage.getItem("" + index);
+    myLeads.push(ele);
+    let element = document.createElement("li");
+    let chl = document.createElement("a");
+    chl.referrerPolicy = "noopener noreferrer";
+    chl.href = ele;
+    chl.target = "_blank";
+    chl.text = ele;
+    element.append(chl);
+    ulEl.appendChild(element);
+    count += 1;
+    children.push(element);
 }
 
-function p2change2()
-{
-    if (secondCard === 1){
-        p2.textContent += " - " + "A";
-    }
-    else if (secondCard === 11){
-        p2.textContent += " - " + "J";
-    }
-    else if (secondCard === 12){
-        p2.textContent += " - " + "Q";
-    }
-    else if (secondCard === 13){
-        p2.textContent += " - " + "K";
-    }
-    else{
-        p2.textContent += " - " + secondCard;
-    }
-}
+inputBtn.addEventListener("click", () => {
+    let a = " ";
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        console.log(tabs[0]);
+        a = tabs[0].url;
+        console.log(a);
+        if (!myLeads.includes(a)){
+            myLeads.push(a);
+            let element = document.createElement("li");
+            let chl = document.createElement("a");
+            chl.referrerPolicy = "noopener noreferrer";
+            chl.href = a;
+            chl.target = "_blank";
+            chl.text = a;
+            element.append(chl)
+            ulEl.appendChild(element);
+            localStorage.setItem("" + count, a);
+            count += 1;
+            children.push(element);
+        }
+        inputEl.value = "";
+    })
+})
 
-function startGame()
-{
-    firstCard = Math.floor(Math.random() * 13) + 1;
-    secondCard = Math.floor(Math.random() * 13) + 1;
-
-    if (firstCard === 1){
-        sum = 11;
+const clearBtn = document.getElementById("clear-btn");
+clearBtn.addEventListener("click", () => {
+    localStorage.clear();
+    count = 0;
+    while (children.length > 0) {
+        ulEl.removeChild(children[0]);
+        children.shift();
+        myLeads.shift();
     }
-    else if (firstCard > 10){
-        sum = 10;
-    }
-    else{
-        sum = firstCard;
-    }
-
-    if (secondCard === 1){
-        sum += 11;
-    }
-    else if (secondCard > 10){
-        sum += 10;
-    }
-    else{
-        sum += secondCard;
-    }
-
-    if (sum < 21){
-        p1.textContent = "Do you wanna draw a new card?";
-        p2change();
-        p3.textContent = "Sum : " + sum;
-        start.onclick = null;
-        newcard.onclick = () => {func()}
-    }
-    else if (sum === 21){
-        p1.textContent = "You won! You've got a Blackjack";
-        p2change();
-        p3.textContent = "Sum : " + sum;
-    }
-    else{
-        p1.textContent = "You're out of the game";
-        p2change();
-        p3.textContent = "Sum : " + sum;
-    }
-}
-
-function func()
-{
-    secondCard = Math.floor(Math.random() * 13) + 1;
-    
-    if (secondCard === 1){
-        sum += 11;
-    }
-    else if (secondCard > 10){
-        sum += 10;
-    }
-    else{
-        sum += secondCard;
-    }
-
-    if (sum < 21){
-        p1.textContent = "Do you wanna draw a new card?";
-       p2change2();
-        p3.textContent = "Sum : " + sum;
-    }
-    else if (sum === 21){
-        p1.textContent = "You won! You've got a Blackjack";
-        p2change2();
-        p3.textContent = "Sum : " + sum;
-        start.onclick = () => {startGame()};
-        newcard.onclick = null;
-    }
-    else{
-        p1.textContent = "You're out of the game";
-        p2change2();
-        p3.textContent = "Sum : " + sum;
-        start.onclick = () => {startGame()};
-        newcard.onclick = null;
-    }
-}
+})
